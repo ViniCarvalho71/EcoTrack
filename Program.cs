@@ -1,5 +1,6 @@
 
 using EcoTrack.Data;
+using EcoTrack.Servicos;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcoTrack {
@@ -14,12 +15,14 @@ namespace EcoTrack {
             builder.Services.AddDbContext<DataContext>(
                 options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // Adicione os serviços aqui
+            builder.Services.AddScoped<ServicoCasa>();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment()) {
                 app.UseSwagger();
                 app.UseSwaggerUI();
