@@ -1,4 +1,3 @@
-
 using EcoTrack.Data;
 using EcoTrack.Servicos;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +16,7 @@ namespace EcoTrack {
 
             // Adicione os serviços aqui
             builder.Services.AddScoped<ServicoCasa>();
+            builder.Services.AddScoped<ServicoAgua>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
