@@ -1,4 +1,7 @@
 
+using EcoTrack.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace EcoTrack {
     public class Program {
         public static void Main(string[] args) {
@@ -7,7 +10,10 @@ namespace EcoTrack {
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+            builder.Services.AddDbContext<DataContext>(
+                options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
