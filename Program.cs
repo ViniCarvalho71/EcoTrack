@@ -17,6 +17,7 @@ namespace EcoTrack {
             // Adicione os serviços aqui
             builder.Services.AddScoped<ServicoCasa>();
             builder.Services.AddScoped<ServicoAgua>();
+            builder.Services.AddScoped<ServicoLuz>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
