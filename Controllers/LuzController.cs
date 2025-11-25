@@ -18,40 +18,55 @@ public class luzController : ControllerBase
     public async Task<IActionResult> Get()
     {
         var result = await _servico.ObterTodasLuz();
-        if (result != null)
+        if (result.Dados != null)
         {
             return Ok(result);
 
         }
-        else
+        return NotFound(result.Mensagem);
+    }
+
+    [HttpGet("{Id}")]
+    public async Task<IActionResult> Get(int id)
+    {
+        var result = await _servico.ObterLuzPorId(id);
+        if(result.Dados == null)
         {
             return NotFound(result.Mensagem);
         }
+        return Ok(result);
     }
 
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] Luz luz)
     {
-        if (luz == null)
-        {
-            return BadRequest("Dados de luz inválidos");
-        }
         var result = await _servico.AdicionarLuz(luz);
+
+        if (result.Dados == null)
+        {
+            return BadRequest(result.Mensagem);
+        }
         return Ok(result);
     }
 
     [HttpPut]
-    public async Task<IActionResult> Put([FromBody] Luz luz, int id) // Terminar isso
+    public async Task<IActionResult> Put([FromBody] Luz luz) // Terminar isso
     {
-        if (luz == null) {
-            return BadRequest("Dados de luz inválidos");
+        var result = await _servico.AtualizarLuz(luz);
+
+        if (result.Dados == null) {
+            return BadRequest(result.Mensagem);
         }
-        return Ok();
+        return Ok(result);
     }
 
-    [HttpDelete]
+    [HttpDelete("{Id}")]
     public async Task<IActionResult> Delete(int id)// Terminar isso
     {
-        return Ok();
+        var result = await _servico.DeletarLuz(id);
+        if (result.Dados == null) {
+            return BadRequest(result.Mensagem);
+        }
+        return Ok(result);
     }
 }

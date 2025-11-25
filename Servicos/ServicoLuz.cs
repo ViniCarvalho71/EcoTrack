@@ -57,8 +57,7 @@ public class ServicoLuz
                 Dados = null
             };
         }
-        else
-        {
+        
             try
             {
                 _context.Luz.Add(novaLuz);
@@ -76,6 +75,51 @@ public class ServicoLuz
                     Dados = null
                 };
             }
-        }
     }
-}
+
+    public async Task<RetornoDto<Luz>> AtualizarLuz(Luz luzAtualizada)
+    {
+        List<Luz> dados = new List<Luz>();
+        var luz = _context.Luz.FirstOrDefaultAsync(x => x.Id == luzAtualizada.Id);
+        if (luz == null)
+        {
+            return new RetornoDto<Luz>
+            {
+                Mensagem = "Registro de luz não encontrado",
+                Dados = null
+            };
+        }
+        _context.Entry(luz).CurrentValues.SetValues(luzAtualizada);
+        await _context.SaveChangesAsync();
+        var atualizado = await _context.Luz.Include(c => c.Casa).FirstOrDefaultAsync(x => x.Id == luzAtualizada.Id);
+        dados.Add(atualizado);
+        return new RetornoDto<Luz>
+        {
+            Mensagem = "Registro de luz atualizado com sucesso",
+            Dados = dados
+        };
+    }
+
+    public async Task<RetornoDto<Luz>> DeletarLuz(int id)
+    {
+        List<Luz> dados = new List<Luz>();
+        var result = await _context.Luz.Include(c=>c.Casa).FirstOrDefaultAsync(x=> x.Id == id);
+        if (result == null)
+        {
+            return new RetornoDto<Luz>
+            {
+                Mensagem = "Registro de luz não encontrado",
+                Dados = null
+            };
+
+        }
+        dados.Add(result);
+        _context.Luz.Remove(result);
+        await _context.SaveChangesAsync();
+        return new RetornoDto<Luz>
+        { Mensagem = "Luz removida com sucesso",
+          Dados = dados
+        };
+    }
+
+    }
