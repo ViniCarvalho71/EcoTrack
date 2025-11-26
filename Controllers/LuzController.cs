@@ -26,7 +26,7 @@ public class luzController : ControllerBase
         return NotFound(result.Mensagem);
     }
 
-    [HttpGet("{Id}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
         var result = await _servico.ObterLuzPorId(id);
@@ -54,13 +54,14 @@ public class luzController : ControllerBase
     {
         var result = await _servico.AtualizarLuz(luz);
 
-        if (result.Dados == null) {
-            return BadRequest(result.Mensagem);
+        if (result.Dados != null) {
+            return Ok(result);
         }
-        return Ok(result);
+        return BadRequest(result.Mensagem);
+
     }
 
-    [HttpDelete("{Id}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)// Terminar isso
     {
         var result = await _servico.DeletarLuz(id);

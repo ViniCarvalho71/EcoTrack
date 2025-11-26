@@ -49,6 +49,7 @@ public class ServicoLuz
 
     public async Task<RetornoDto<Luz>> AdicionarLuz(Luz novaLuz)
     {
+        List<Luz> dados = new List<Luz>();
         if (novaLuz == null)
         {
             return new RetornoDto<Luz>
@@ -58,45 +59,51 @@ public class ServicoLuz
             };
         }
         
-            try
-            {
-                _context.Luz.Add(novaLuz);
-                return new RetornoDto<Luz>
-                {
-                    Mensagem = "Registro de luz adicionado com sucesso",
-                    Dados = new List<Luz> { novaLuz }
-                };
-            }
-            catch (Exception ex)
-            {
-                return new RetornoDto<Luz>
-                {
-                    Mensagem = $"Erro ao adicionar registro de luz: {ex.Message}",
-                    Dados = null
-                };
-            }
-    }
+        try
+        {
+            _context.Luz.Add(novaLuz);
+            await _context.SaveChangesAsync();
+            var result = await _context.Luz.FirstOrDefaultAsync(a => a.Id == novaLuz.Id);
+            dados.Add(result);
+            return new RetornoDto<Luz>
 
-    public async Task<RetornoDto<Luz>> AtualizarLuz(Luz luzAtualizada)
-    {
-        List<Luz> dados = new List<Luz>();
-        var luz = _context.Luz.FirstOrDefaultAsync(x => x.Id == luzAtualizada.Id);
-        if (luz == null)
+            {
+                Mensagem = "Registro de luz adicionado com sucesso",
+                Dados = dados
+            };
+            
+        }
+        catch (Exception ex)
         {
             return new RetornoDto<Luz>
             {
-                Mensagem = "Registro de luz não encontrado",
+                Mensagem = $"Erro ao adicionar registro de luz: {ex.Message}",
                 Dados = null
             };
         }
-        _context.Entry(luz).CurrentValues.SetValues(luzAtualizada);
-        await _context.SaveChangesAsync();
-        var atualizado = await _context.Luz.Include(c => c.Casa).FirstOrDefaultAsync(x => x.Id == luzAtualizada.Id);
-        dados.Add(atualizado);
+    }
+        
+    public async Task<RetornoDto<Luz>> AtualizarLuz(Luz luzAtualizada)
+    {
+        List<Luz> dados = new List<Luz>();
+        var luz = await _context.Luz.FirstOrDefaultAsync(x => x.Id == luzAtualizada.Id);
+        if (luz != null)
+        {
+            _context.Entry(luz).CurrentValues.SetValues(luzAtualizada);
+            await _context.SaveChangesAsync();
+            var atualizado = await _context.Luz.Include(c => c.Casa).FirstOrDefaultAsync(x => x.Id == luzAtualizada.Id);
+            dados.Add(atualizado);
+            return new RetornoDto<Luz>
+            {
+                Mensagem = "Registro de luz atualizado com sucesso",
+                Dados = dados
+            };
+        }
+        
         return new RetornoDto<Luz>
         {
-            Mensagem = "Registro de luz atualizado com sucesso",
-            Dados = dados
+            Mensagem = "Registro de luz não encontrado",
+            Dados = null
         };
     }
 
