@@ -1,3 +1,4 @@
+using EcoTrack.Dtos;
 using EcoTrack.Entidades;
 using EcoTrack.Interfaces;
 using EcoTrack.Servicos;
@@ -46,7 +47,7 @@ namespace EcoTrack.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Agua agua)
+        public async Task<IActionResult> Post([FromBody] AguaCreateDto agua)
         {
             var result = await _servico.AdicionarAgua(agua);
             if (result.Dados != null)
@@ -60,7 +61,7 @@ namespace EcoTrack.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] Agua agua)
+        public async Task<IActionResult> Put([FromBody] AguaAtualizarDto agua)
         {
             var result = await _servico.AtualizarAgua(agua);
             if (result.Dados != null)

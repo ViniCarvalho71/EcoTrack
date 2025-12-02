@@ -3,36 +3,55 @@ using EcoTrack.Dto;
 using EcoTrack.Entidades;
 using Microsoft.EntityFrameworkCore;
 using EcoTrack.Interfaces;
+using EcoTrack.Dtos;
 
 namespace EcoTrack.Servicos
 {
     public class ServicoAgua : IServicoAgua
     {
         private readonly DataContext _context;
-
-        public ServicoAgua(DataContext context)
+        private readonly IServicoCasa _servicoCasa;
+        public ServicoAgua(DataContext context, IServicoCasa servicoCasa)
         {
             _context = context;
+            _servicoCasa = servicoCasa;
         }
 
-        public async Task<RetornoDto<Agua>> AdicionarAgua(Agua agua)
+        public async Task<RetornoDto<Agua>> AdicionarAgua(AguaCreateDto aguadto)
         {
             List<Agua> dados = new List<Agua>();
 
-            if (agua == null)
+            if (aguadto == null)
                 return new RetornoDto<Agua>
                 {
                     Mensagem = "Por favor envie um registro de água válido",
                     Dados = null
                 };
+            var casa = await _servicoCasa.ObterCasaPorId(aguadto.CasaId);
+            if (casa.Dados == null)
+            {
+                return new RetornoDto<Agua>
+                {
+                    Mensagem = "Casa não existe",
+                    Dados = null
+                };
+            }
 
             try
             {
+                var agua = new Agua
+                {
+                    Quantidade = aguadto.Quantidade,
+                    CasaId = aguadto.CasaId,
+                    Limite = aguadto.Limite,
+                    Identificador = aguadto.Identificador,
+                    Data = DateTime.UtcNow
+                };
                 _context.Agua.Add(agua);
                 await _context.SaveChangesAsync();
 
-                var created = await _context.Agua.FirstOrDefaultAsync(a => a.Id == agua.Id);
-                dados.Add(created);
+
+                dados.Add(agua);
 
                 return new RetornoDto<Agua>
                 {
@@ -110,13 +129,31 @@ namespace EcoTrack.Servicos
             }
         }
 
-        public async Task<RetornoDto<Agua>> AtualizarAgua(Agua aguaAtualizada)
+        public async Task<RetornoDto<Agua>> AtualizarAgua(AguaAtualizarDto aguaAtualizada)
         {
             List<Agua> dados = new List<Agua>();
             var agua = await _context.Agua.FirstOrDefaultAsync(x => x.Id == aguaAtualizada.Id);
             if (agua != null)
             {
-                _context.Entry(agua).CurrentValues.SetValues(aguaAtualizada);
+                var casa = await _servicoCasa.ObterCasaPorId(aguaAtualizada.CasaId);
+                if (casa.Dados == null)
+                {
+                    return new RetornoDto<Agua>
+                    {
+                        Mensagem = "Casa não existe",
+                        Dados = null
+                    };
+                }
+                var novaAgua = new Agua
+                {
+                    Id = aguaAtualizada.Id,
+                    Quantidade = aguaAtualizada.Quantidade,
+                    CasaId = aguaAtualizada.CasaId,
+                    Limite = aguaAtualizada.Limite,
+                    Identificador = aguaAtualizada.Identificador,
+                    Data = DateTime.UtcNow
+                };
+                _context.Entry(agua).CurrentValues.SetValues(novaAgua);
 
                 await _context.SaveChangesAsync();
 

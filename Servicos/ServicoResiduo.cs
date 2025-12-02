@@ -9,10 +9,11 @@ namespace EcoTrack.Servicos
     public class ServicoResiduo : IServicoResiduo
     {
         private readonly DataContext _context;
-
-        public ServicoResiduo(DataContext context)
+        private readonly IServicoCasa _servicoCasa;
+        public ServicoResiduo(DataContext context, IServicoCasa servicoCasa)
         {
             _context = context;
+            _servicoCasa = servicoCasa;
         }
 
         public async Task<RetornoDto<Residuo>> ObterTodosResiduos()
@@ -50,11 +51,11 @@ namespace EcoTrack.Servicos
             }
         }
 
-        public async Task<RetornoDto<Residuo>> AdicionarResiduo(Residuo residuo)
+        public async Task<RetornoDto<Residuo>> AdicionarResiduo(ResiduoCreateDto residuoDto)
         {
             List<Residuo> dados = new List<Residuo>();
 
-            if (residuo == null)
+            if (residuoDto == null)
             {
                 return new RetornoDto<Residuo>
                 {
@@ -62,14 +63,30 @@ namespace EcoTrack.Servicos
                     Dados = null
                 };
             }
+            var casa = await _servicoCasa.ObterCasaPorId(residuoDto.CasaId);
+            if (casa.Dados == null)
+            {
+                return new RetornoDto<Residuo>
+                {
+                    Mensagem = "Casa não existe",
+                    Dados = null
+                };
+            }
 
             try
             {
+                var residuo = new Residuo
+                {
+                    Quantidade = residuoDto.Quantidade,
+                    CasaId = residuoDto.CasaId,
+                    Limite = residuoDto.Limite,
+                    Identificador = residuoDto.Identificador,
+                    Data = DateTime.UtcNow
+                };
                 _context.Residuo.Add(residuo);
                 await _context.SaveChangesAsync();
 
-                var created = await _context.Residuo.FirstOrDefaultAsync(a => a.Id == residuo.Id);
-                dados.Add(created);
+                dados.Add(residuo);
 
                 return new RetornoDto<Residuo>
                 {
@@ -87,7 +104,7 @@ namespace EcoTrack.Servicos
             }
         }
 
-        public async Task<RetornoDto<Residuo>> AtualizarResiduo(Residuo residuoAtualizado)
+        public async Task<RetornoDto<Residuo>> AtualizarResiduo(ResiduoAtualizarDto residuoAtualizado)
         {
             List<Residuo> dados = new List<Residuo>();
             var residuo = await _context.Residuo.FirstOrDefaultAsync(x => x.Id == residuoAtualizado.Id);
@@ -102,6 +119,16 @@ namespace EcoTrack.Servicos
             }
             else
             {
+                var casa = await _servicoCasa.ObterCasaPorId(residuoAtualizado.CasaId);
+                if (casa.Dados == null)
+                {
+                    return new RetornoDto<Residuo>
+                    {
+                        Mensagem = "Casa não existe",
+                        Dados = null
+                    };
+                }
+
                 _context.Entry(residuo).CurrentValues.SetValues(residuoAtualizado);
 
                 await _context.SaveChangesAsync();

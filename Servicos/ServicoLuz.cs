@@ -11,9 +11,11 @@ namespace EcoTrack.Servicos;
 public class ServicoLuz : IServicoLuz
 {
     private readonly DataContext _context;
-    public ServicoLuz(DataContext context)
+    private readonly IServicoCasa _servicoCasa;
+    public ServicoLuz(DataContext context, IServicoCasa servicoCasa)
     {
         _context = context;
+        _servicoCasa = servicoCasa;
     }
         
     public async Task<RetornoDto<Luz>> ObterTodasLuz()
@@ -49,7 +51,7 @@ public class ServicoLuz : IServicoLuz
 
     }
 
-    public async Task<RetornoDto<Luz>> AdicionarLuz(Luz novaLuz)
+    public async Task<RetornoDto<Luz>> AdicionarLuz(LuzCreateDto novaLuz)
     {
         List<Luz> dados = new List<Luz>();
         if (novaLuz == null)
@@ -60,13 +62,29 @@ public class ServicoLuz : IServicoLuz
                 Dados = null
             };
         }
-        
+        var casa = await _servicoCasa.ObterCasaPorId(novaLuz.CasaId);
+        if (casa.Dados == null)
+        {
+            return new RetornoDto<Luz>
+            {
+                Mensagem = "Casa não existe",
+                Dados = null
+            };
+        }
         try
         {
-            _context.Luz.Add(novaLuz);
+
+            var luz = new Luz
+            {
+                Quantidade = novaLuz.Quantidade,
+                CasaId = novaLuz.CasaId,
+                Limite = novaLuz.Limite,
+                Identificador = novaLuz.Identificador,
+                Data = DateTime.UtcNow
+            };
+            _context.Luz.Add(luz);
             await _context.SaveChangesAsync();
-            var result = await _context.Luz.FirstOrDefaultAsync(a => a.Id == novaLuz.Id);
-            dados.Add(result);
+            dados.Add(luz);
             return new RetornoDto<Luz>
 
             {
@@ -85,13 +103,22 @@ public class ServicoLuz : IServicoLuz
         }
     }
         
-    public async Task<RetornoDto<Luz>> AtualizarLuz(Luz luzAtualizada)
+    public async Task<RetornoDto<Luz>> AtualizarLuz(LuzAtualizarDto luzAtualizada)
     {
         List<Luz> dados = new List<Luz>();
         var luz = await _context.Luz.FirstOrDefaultAsync(x => x.Id == luzAtualizada.Id);
         if (luz != null)
         {
-            if(luz.Limite > luzAtualizada.Quantidade)
+            var casa = await _servicoCasa.ObterCasaPorId(luzAtualizada.CasaId);
+            if (casa.Dados == null)
+            {
+                return new RetornoDto<Luz>
+                {
+                    Mensagem = "Casa não existe",
+                    Dados = null
+                };
+            }
+            if (luz.Limite > luzAtualizada.Quantidade)
             {
                 return new RetornoDto<Luz>
                 {
@@ -99,7 +126,16 @@ public class ServicoLuz : IServicoLuz
                     Dados = null
                 };
             }
-            _context.Entry(luz).CurrentValues.SetValues(luzAtualizada);
+            var luzNova = new Luz
+            {
+                Id = luzAtualizada.Id,
+                Quantidade = luzAtualizada.Quantidade,
+                CasaId = luzAtualizada.CasaId,
+                Limite = luzAtualizada.Limite,
+                Identificador = luzAtualizada.Identificador,
+                Data = DateTime.UtcNow
+            };
+            _context.Entry(luz).CurrentValues.SetValues(luzNova);
             await _context.SaveChangesAsync();
             var atualizado = await _context.Luz.Include(c => c.Casa).FirstOrDefaultAsync(x => x.Id == luzAtualizada.Id);
             dados.Add(atualizado);

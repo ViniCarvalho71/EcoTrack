@@ -47,7 +47,7 @@ namespace EcoTrack.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Residuo residuo)
+        public async Task<IActionResult> Post([FromBody] ResiduoCreateDto residuo)
         {
             var result = await _servico.AdicionarResiduo(residuo);
 
@@ -62,7 +62,7 @@ namespace EcoTrack.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] Residuo residuo)
+        public async Task<IActionResult> Put([FromBody] ResiduoAtualizarDto residuo)
         {
             var result = await _servico.AtualizarResiduo(residuo);
 

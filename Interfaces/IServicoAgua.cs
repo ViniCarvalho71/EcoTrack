@@ -1,15 +1,16 @@
 using EcoTrack.Dto;
+using EcoTrack.Dtos;
 using EcoTrack.Entidades;
 
 namespace EcoTrack.Interfaces
 {
     public interface IServicoAgua
     {
-        Task<RetornoDto<Agua>> AdicionarAgua(Agua agua);
+        Task<RetornoDto<Agua>> AdicionarAgua(AguaCreateDto agua);
         Task<RetornoDto<Agua>> ObterTodasAguas();
         Task<RetornoDto<Agua>> ObterAguaPorId(int id);
         Task<RetornoDto<Agua>> RemoverAgua(int id);
-        Task<RetornoDto<Agua>> AtualizarAgua(Agua aguaAtualizada);
+        Task<RetornoDto<Agua>> AtualizarAgua(AguaAtualizarDto aguaAtualizada);
 
         Task<RetornoDto<double>> CalcularGastoAgua(int id, double valor);
         Task<RetornoDto<double>> AtualizarLimiteAgua(int id, double NovoLimite);

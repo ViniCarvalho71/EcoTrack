@@ -39,7 +39,7 @@ public class luzController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Luz luz)
+    public async Task<IActionResult> Post([FromBody] LuzCreateDto luz)
     {
         var result = await _servico.AdicionarLuz(luz);
 
@@ -51,7 +51,7 @@ public class luzController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> Put([FromBody] Luz luz)
+    public async Task<IActionResult> Put([FromBody] LuzAtualizarDto luz)
     {
         var result = await _servico.AtualizarLuz(luz);
 
