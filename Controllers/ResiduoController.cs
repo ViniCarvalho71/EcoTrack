@@ -1,4 +1,5 @@
 using EcoTrack.Entidades;
+using EcoTrack.Interfaces;
 using EcoTrack.Servicos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,11 +7,11 @@ namespace EcoTrack.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ResiduoController : Controller
+    public class ResiduoController : ControllerBase
     {
-        public readonly ServicoResiduo _servico;
+        public readonly IServicoResiduo _servico;
 
-        public ResiduoController(ServicoResiduo servico)
+        public ResiduoController(IServicoResiduo servico)
         {
             _servico = servico;
         }

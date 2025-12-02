@@ -1,4 +1,5 @@
 ﻿using EcoTrack.Entidades;
+using EcoTrack.Interfaces;
 using EcoTrack.Servicos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,9 +10,9 @@ namespace EcoTrack.Controllers
     [ApiController]
     public class CasaController : ControllerBase
     {
-        private readonly ServicoCasa _servico;
+        private readonly IServicoCasa _servico;
 
-        public CasaController(ServicoCasa servico)
+        public CasaController(IServicoCasa servico)
         {
             _servico = servico;
         }

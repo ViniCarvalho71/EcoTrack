@@ -3,11 +3,12 @@ using EcoTrack.Dto;
 using EcoTrack.Entidades;
 using Microsoft.EntityFrameworkCore;
 using System;
+using EcoTrack.Interfaces;
 
 
 namespace EcoTrack.Servicos;
 
-public class ServicoLuz
+public class ServicoLuz : IServicoLuz
 {
     private readonly DataContext _context;
     public ServicoLuz(DataContext context)

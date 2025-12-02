@@ -1,4 +1,5 @@
 using EcoTrack.Entidades;
+using EcoTrack.Interfaces;
 using EcoTrack.Servicos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,8 +9,8 @@ namespace EcoTrack.Controllers;
 [ApiController]
 public class luzController : ControllerBase
 {
-    public readonly ServicoLuz _servico;
-    public luzController(ServicoLuz servico)
+    public readonly IServicoLuz _servico;
+    public luzController(IServicoLuz servico)
     {
         _servico = servico;
     }

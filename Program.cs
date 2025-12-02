@@ -1,6 +1,7 @@
 using EcoTrack.Data;
 using EcoTrack.Servicos;
 using Microsoft.EntityFrameworkCore;
+using EcoTrack.Interfaces;
 
 namespace EcoTrack {
     public class Program {
@@ -15,10 +16,10 @@ namespace EcoTrack {
                 options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Adicione os serviços aqui
-            builder.Services.AddScoped<ServicoCasa>();
-            builder.Services.AddScoped<ServicoAgua>();
-            builder.Services.AddScoped<ServicoLuz>();
-            builder.Services.AddScoped<ServicoResiduo>();
+            builder.Services.AddScoped<IServicoCasa, ServicoCasa>();
+            builder.Services.AddScoped<IServicoAgua, ServicoAgua>();
+            builder.Services.AddScoped<IServicoLuz, ServicoLuz>();
+            builder.Services.AddScoped<IServicoResiduo, ServicoResiduo>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

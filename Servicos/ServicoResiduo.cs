@@ -2,10 +2,11 @@ using EcoTrack.Data;
 using EcoTrack.Dto;
 using EcoTrack.Entidades;
 using Microsoft.EntityFrameworkCore;
+using EcoTrack.Interfaces;
 
 namespace EcoTrack.Servicos
 {
-    public class ServicoResiduo
+    public class ServicoResiduo : IServicoResiduo
     {
         private readonly DataContext _context;
 
