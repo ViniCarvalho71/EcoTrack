@@ -14,6 +14,7 @@ namespace EcoTrack.Entidades
 
         public abstract string TipoRecurso { get; }
 
-
+        public double Limite { get; set; }
+        public string Identificador { get; set; } = string.Empty;
     }
 }

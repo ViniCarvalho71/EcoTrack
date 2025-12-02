@@ -89,5 +89,50 @@ namespace EcoTrack.Controllers
                 return BadRequest(result.Mensagem);
             }
         }
+
+        
+        [HttpPatch("Limite/{id}")]
+        public async Task<IActionResult> AtualizarLimite(int id, [FromBody] double NovoLimite)
+        {
+            var result = await _servico.AtualizarLimiteResiduo(id, NovoLimite);
+            if (result.Dados != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result.Mensagem);
+            }
+        }
+
+
+
+        [HttpPatch("Quantidade/{id}/Zerar")]
+        public async Task<IActionResult> ZerarQuantidade(int id)
+        {
+            var result = await _servico.ZerarQuantidadeResiduo(id);
+            if (result.Dados != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result.Mensagem);
+            }
+        }
+
+        [HttpPatch("Quantidade/{id}")]
+        public async Task<IActionResult> AtualizarQuantidade(int id, [FromBody] double novaQuantidade)
+        {
+            var result = await _servico.AtualizarQuantidadeResiduo(id, novaQuantidade);
+            if (result.Dados != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result.Mensagem);
+            }
+        }
     }
 }

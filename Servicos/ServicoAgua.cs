@@ -163,5 +163,93 @@ namespace EcoTrack.Servicos
                 Dados = null
             };
         }
+
+
+        public async Task<RetornoDto<double>> AtualizarLimiteAgua(int id, double NovoLimite)
+        {
+            var agua = await _context.Agua.FirstOrDefaultAsync(x => x.Id == id);
+            if (agua != null)
+            {
+                if (NovoLimite < agua.Quantidade)
+                {
+                    return new RetornoDto<double>
+                    {
+                        Mensagem = "O novo limite não pode ser menor que a quantidade já consumida.",
+                        Dados = null
+                    };
+                }
+                if (NovoLimite < 0)
+                {
+                    return new RetornoDto<double>
+                    {
+                        Mensagem = "O novo limite não pode ser negativo.",
+                        Dados = null
+                    };
+                }
+                agua.Limite = NovoLimite;
+                await _context.SaveChangesAsync();
+                return new RetornoDto<double>
+                {
+                    Mensagem = "Limite atualizado com sucesso.",
+                    Dados = new List<double> { agua.Limite }
+                };
+            }
+            return new RetornoDto<double>
+            {
+                Mensagem = "Registro de agua não encontrado.",
+                Dados = null
+            };
+        }
+        public async Task<RetornoDto<double>> ZerarQuantidadeAgua(int id)
+        {
+            var agua = await _context.Agua.FirstOrDefaultAsync(x => x.Id == id);
+            if (agua != null)
+            {
+                agua.Quantidade = 0;
+                await _context.SaveChangesAsync();
+                return new RetornoDto<double>
+                {
+                    Mensagem = "Quantidade zerada com sucesso.",
+                    Dados = new List<double> { agua.Quantidade }
+                };
+            }
+            return new RetornoDto<double>
+            {
+                Mensagem = "Registro de agua não encontrado.",
+                Dados = null
+            };
+        }
+        public async Task<RetornoDto<double>> AtualizarQuantidadeAgua(int id, double NovaQuantidade)
+        {
+            var result = await _context.Agua.FirstOrDefaultAsync(x => x.Id == id);
+            if (result != null)
+            {
+                var mensagem = "";
+                if (result.Quantidade+NovaQuantidade > result.Limite)
+                {
+                    mensagem = "ALERTA! O limite definido foi ultrapassado!";
+                }
+                if (NovaQuantidade < 0)
+                {
+                    return new RetornoDto<double>
+                    {
+                        Mensagem = "A quantidade não pode ser negativa.",
+                        Dados = null
+                    };
+                }
+                result.Quantidade = result.Quantidade+NovaQuantidade;
+                await _context.SaveChangesAsync();
+                return new RetornoDto<double>
+                {
+                    Mensagem = "Quantidade atualizada com sucesso."+mensagem,
+                    Dados = new List<double> { result.Quantidade }
+                };
+            }
+            return new RetornoDto<double>
+            {
+                Mensagem = "Registro de agua não encontrado.",
+                Dados = null
+            };
+        }
     }
 }

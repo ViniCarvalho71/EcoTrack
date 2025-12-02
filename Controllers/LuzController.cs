@@ -71,7 +71,7 @@ public class luzController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("id")]
+    [HttpPost("CalcGasto/{id}")]
     public async Task<IActionResult> CalcularGasto(int id, [FromBody] double valor)
     {
         var result = await _servico.CalcularGastoLuz(id, valor);
@@ -84,4 +84,49 @@ public class luzController : ControllerBase
             return BadRequest(result.Mensagem);
         }
     }
+
+    [HttpPatch("Limite/{id}")]
+    public async Task<IActionResult> AtualizarLimite(int id, [FromBody] double NovoLimite)
+    {
+        var result = await _servico.AtualizarLimiteLuz(id, NovoLimite);
+        if (result.Dados != null)
+        {
+            return Ok(result);
+        }
+        else
+        {
+            return BadRequest(result.Mensagem);
+        }
+    }
+
+    
+    
+    [HttpPatch("Quantidade/{id}/Zerar")]
+    public async Task<IActionResult> ZerarQuantidade(int id)
+    {
+        var result = await _servico.ZerarQuantidadeLuz(id);
+        if (result.Dados != null)
+        {
+            return Ok(result);
+        }
+        else
+        {
+            return BadRequest(result.Mensagem);
+        }
+    }
+
+    [HttpPatch("Quantidade/{id}")]
+    public async Task<IActionResult> AtualizarQuantidade(int id, [FromBody] double novaQuantidade)
+    {
+        var result = await _servico.AtualizarQuantidadeLuz(id, novaQuantidade);
+        if (result.Dados != null)
+        {
+            return Ok(result);
+        }
+        else
+        {
+            return BadRequest(result.Mensagem);
+        }
+    }
+
 }

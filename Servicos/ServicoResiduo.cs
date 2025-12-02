@@ -57,7 +57,7 @@ namespace EcoTrack.Servicos
             {
                 return new RetornoDto<Residuo>
                 {
-                    Mensagem = "Por favor envie um registro de água válido",
+                    Mensagem = "Por favor envie um registro de resíduo válido",
                     Dados = null
                 };
             }
@@ -72,7 +72,7 @@ namespace EcoTrack.Servicos
 
                 return new RetornoDto<Residuo>
                 {
-                    Mensagem = "Água adicionada com sucesso",
+                    Mensagem = "resíduo adicionado com sucesso",
                     Dados = dados
                 };
             }
@@ -80,7 +80,7 @@ namespace EcoTrack.Servicos
             {
                 return new RetornoDto<Residuo>
                 {
-                    Mensagem = $"Erro ao adicionar água: {ex.Message}",
+                    Mensagem = $"Erro ao adicionar resíduo: {ex.Message}",
                     Dados = null
                 };
             }
@@ -140,6 +140,94 @@ namespace EcoTrack.Servicos
                     Dados = null
                 };
             }
+        }
+
+
+        public async Task<RetornoDto<double>> AtualizarLimiteResiduo(int id, double NovoLimite)
+        {
+            var residuo = await _context.Residuo.FirstOrDefaultAsync(x => x.Id == id);
+            if (residuo != null)
+            {
+                if (NovoLimite < residuo.Quantidade)
+                {
+                    return new RetornoDto<double>
+                    {
+                        Mensagem = "O novo limite não pode ser menor que a quantidade já consumida.",
+                        Dados = null
+                    };
+                }
+                if (NovoLimite < 0)
+                {
+                    return new RetornoDto<double>
+                    {
+                        Mensagem = "O novo limite não pode ser negativo.",
+                        Dados = null
+                    };
+                }
+                residuo.Limite = NovoLimite;
+                await _context.SaveChangesAsync();
+                return new RetornoDto<double>
+                {
+                    Mensagem = "Limite atualizado com sucesso.",
+                    Dados = new List<double> { residuo.Limite }
+                };
+            }
+            return new RetornoDto<double>
+            {
+                Mensagem = "Registro de residuo não encontrado.",
+                Dados = null
+            };
+        }
+        public async Task<RetornoDto<double>> ZerarQuantidadeResiduo(int id)
+        {
+            var residuo = await _context.Residuo.FirstOrDefaultAsync(x => x.Id == id);
+            if (residuo != null)
+            {
+                residuo.Quantidade = 0;
+                await _context.SaveChangesAsync();
+                return new RetornoDto<double>
+                {
+                    Mensagem = "Quantidade zerada com sucesso.",
+                    Dados = new List<double> { residuo.Quantidade }
+                };
+            }
+            return new RetornoDto<double>
+            {
+                Mensagem = "Registro de residuo não encontrado.",
+                Dados = null
+            };
+        }
+        public async Task<RetornoDto<double>> AtualizarQuantidadeResiduo(int id, double NovaQuantidade)
+        {
+            var result = await _context.Residuo.FirstOrDefaultAsync(x => x.Id == id);
+            if (result != null)
+            {
+                var mensagem = "";
+                if (result.Quantidade+NovaQuantidade > result.Limite)
+                {
+                    mensagem = "ALERTA! O limite definido foi ultrapassado!";
+                }
+                if (NovaQuantidade < 0)
+                {
+                    return new RetornoDto<double>
+                    {
+                        Mensagem = "A quantidade não pode ser negativa.",
+                        Dados = null
+                    };
+                }
+                result.Quantidade = result.Quantidade+NovaQuantidade;
+                await _context.SaveChangesAsync();
+                return new RetornoDto<double>
+                {
+                    Mensagem = "Quantidade atualizada com sucesso."+mensagem,
+                    Dados = new List<double> { result.Quantidade }
+                };
+            }
+            return new RetornoDto<double>
+            {
+                Mensagem = "Registro de residuo não encontrado.",
+                Dados = null
+            };
         }
     }
 }

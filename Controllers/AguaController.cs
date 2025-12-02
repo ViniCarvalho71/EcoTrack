@@ -86,10 +86,53 @@ namespace EcoTrack.Controllers
             }
         }
 
-        [HttpPost("id")]
+        [HttpPost("CalcGasto/{id}")]
         public async Task<IActionResult> CalcularGasto(int id, [FromBody] double valor)
         {
             var result = await _servico.CalcularGastoAgua(id, valor);
+            if (result.Dados != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result.Mensagem);
+            }
+        }
+        [HttpPatch("Limite/{id}")]
+        public async Task<IActionResult> AtualizarLimite(int id, [FromBody] double NovoLimite)
+        {
+            var result = await _servico.AtualizarLimiteAgua(id, NovoLimite);
+            if (result.Dados != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result.Mensagem);
+            }
+        }
+
+
+
+        [HttpPatch("Quantidade/{id}/Zerar")]
+        public async Task<IActionResult> ZerarQuantidade(int id)
+        {
+            var result = await _servico.ZerarQuantidadeAgua(id);
+            if (result.Dados != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result.Mensagem);
+            }
+        }
+
+        [HttpPatch("Quantidade/{id}")]
+        public async Task<IActionResult> AtualizarQuantidade(int id, [FromBody] double novaQuantidade)
+        {
+            var result = await _servico.AtualizarQuantidadeAgua(id, novaQuantidade);
             if (result.Dados != null)
             {
                 return Ok(result);
