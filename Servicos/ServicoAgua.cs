@@ -51,7 +51,7 @@ namespace EcoTrack.Servicos
 
         public async Task<RetornoDto<Agua>> ObterTodasAguas()
         {
-            List<Agua> dados = await _context.Agua.Include(c => c.Casa).ToListAsync();
+            List<Agua> dados = await _context.Agua.Include(c => c.Casa).OrderBy(d => d.Data).ToListAsync();
 
             return new RetornoDto<Agua>
             {
@@ -135,6 +135,33 @@ namespace EcoTrack.Servicos
                     Dados = null
                 };
             }
+        }
+
+        public async Task<RetornoDto<double>> CalcularGastoAgua(int id, double valor)
+        {
+            if (valor <= 0)
+            {
+                return new RetornoDto<double>
+                {
+                    Mensagem = "O valor deve ser maior que zero.",
+                    Dados = null
+                };
+            }
+            var agua = await _context.Agua.FirstOrDefaultAsync(x => x.Id == id);
+            if (agua != null)
+            {
+                return new RetornoDto<double>
+                {
+                    Mensagem = "Cálculo realizado com sucesso.",
+                    Dados = new List<double> { agua.Quantidade * valor }
+                };
+
+            }
+            return new RetornoDto<double>
+            {
+                Mensagem = "Registro de água não encontrado.",
+                Dados = null
+            };
         }
     }
 }

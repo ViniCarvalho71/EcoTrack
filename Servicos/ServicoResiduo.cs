@@ -16,7 +16,7 @@ namespace EcoTrack.Servicos
 
         public async Task<RetornoDto<Residuo>> ObterTodosResiduos()
         {
-            List<Residuo> dados = await _context.Residuo.Include(c => c.Casa).ToListAsync();
+            List<Residuo> dados = await _context.Residuo.Include(c => c.Casa).OrderBy(d => d.Data).ToListAsync();
 
             return new RetornoDto<Residuo>
             {

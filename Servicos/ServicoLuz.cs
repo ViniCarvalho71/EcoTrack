@@ -16,7 +16,7 @@ public class ServicoLuz
         
     public async Task<RetornoDto<Luz>> ObterTodasLuz()
     {
-        List<Luz> dados = await _context.Luz.Include(c => c.Casa).ToListAsync();
+        List<Luz> dados = await _context.Luz.Include(c => c.Casa).OrderBy(d => d.Data).ToListAsync();
             return new RetornoDto<Luz>
             {
                 Mensagem = "Registros de luz retornados com sucesso",
@@ -128,5 +128,31 @@ public class ServicoLuz
           Dados = dados
         };
     }
+    public async Task<RetornoDto<double>> CalcularGastoLuz(int id, double valor)
+    {
+        if (valor <= 0)
+        {
+            return new RetornoDto<double>
+            {
+                Mensagem = "O valor deve ser maior que zero.",
+                Dados = null
+            };
+        }
+        var luz = await _context.Luz.FirstOrDefaultAsync(x => x.Id == id);
+        if (luz != null)
+        {
+            return new RetornoDto<double>
+            {
+                Mensagem = "Cálculo realizado com sucesso.",
+                Dados = new List<double> { luz.Quantidade * valor }
+            };
 
+        }
+        return new RetornoDto<double>
+        {
+            Mensagem = "Registro de água não encontrado.",
+            Dados = null
+        };
     }
+
+}

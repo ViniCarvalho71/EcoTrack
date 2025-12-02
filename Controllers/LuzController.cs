@@ -50,7 +50,7 @@ public class luzController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> Put([FromBody] Luz luz) // Terminar isso
+    public async Task<IActionResult> Put([FromBody] Luz luz)
     {
         var result = await _servico.AtualizarLuz(luz);
 
@@ -62,12 +62,26 @@ public class luzController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)// Terminar isso
+    public async Task<IActionResult> Delete(int id)
     {
         var result = await _servico.DeletarLuz(id);
         if (result.Dados == null) {
             return BadRequest(result.Mensagem);
         }
         return Ok(result);
+    }
+
+    [HttpPost("id")]
+    public async Task<IActionResult> CalcularGasto(int id, [FromBody] double valor)
+    {
+        var result = await _servico.CalcularGastoLuz(id, valor);
+        if (result.Dados != null)
+        {
+            return Ok(result);
+        }
+        else
+        {
+            return BadRequest(result.Mensagem);
+        }
     }
 }

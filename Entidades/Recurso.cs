@@ -14,6 +14,6 @@ namespace EcoTrack.Entidades
 
         public abstract string TipoRecurso { get; }
 
-       
+
     }
 }

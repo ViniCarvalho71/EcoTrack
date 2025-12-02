@@ -85,5 +85,19 @@ namespace EcoTrack.Controllers
                 return NotFound(result.Mensagem);
             }
         }
+
+        [HttpPost("id")]
+        public async Task<IActionResult> CalcularGasto(int id, [FromBody] double valor)
+        {
+            var result = await _servico.CalcularGastoAgua(id, valor);
+            if (result.Dados != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result.Mensagem);
+            }
+        }
     }
 }
